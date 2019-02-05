@@ -2,14 +2,19 @@ function age -d "Just to get next version tag on git"
   argparse -n age 'M/major' 'm/minor' 'p/patch' -- $argv
   or return 1
 
-  set -l tags (git tag --sort=-taggerdate | xargs -n 1000)
+  set -l latest_version
 
-  set -l latest_version "v0.0.0"
-  for tag in (string split ' ' $tags)
-    set -l matches (string match -r 'v\d+\.\d+\.\d+' $tag)
-    if test $matches
-      set latest_version $tag
-      break
+  if [ "$argv[1]" != "" ]
+    set latest_version $argv[1]
+  else
+    set -l tags (git tag --sort=-taggerdate | xargs -n 1000)
+    set latest_version "v0.0.0"
+    for tag in (string split ' ' $tags)
+      set -l matches (string match -r 'v\d+\.\d+\.\d+' $tag)
+      if test $matches
+        set latest_version $tag
+        break
+      end
     end
   end
 
